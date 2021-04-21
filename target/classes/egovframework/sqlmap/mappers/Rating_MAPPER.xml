@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="jPlay.rating.dao.RatingMapper">
+	
+	<insert id="insertRating">
+		<![CDATA[
+			INSERT INTO rating 
+				( member_idx
+				  , movie_idx
+				  , rating_score )
+			VALUES ( #{memberIdx}
+				  , #{movieIdx}
+				  , #{rating} )
+		]]>
+	</insert>
+	
+	<update id="updateRating">
+		<![CDATA[
+			UPDATE rating
+			SET rating_score=#{rating}
+			WHERE member_idx = #{memberIdx}
+				AND movie_idx = #{movieIdx}
+			]]>
+	</update>
+	
+	<select id="selectRating" resultType="boolean">
+		<![CDATA[
+			SELECT IF(COUNT(*) = 1, 1, 0)
+			FROM rating
+			WHERE member_idx = #{memberIdx}
+				AND movie_idx = #{movieIdx}
+			]]>
+	</select>
+</mapper>

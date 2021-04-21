@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="jPlay.payment.dao.PaymentMapper">
+	
+	<resultMap id="payment" type="jPlay.payment.vo.PaymentVO">
+		<result property="memberIdx" column="member_idx" />
+		<result property="paymentDate" column="payment_date" />
+		<result property="paymentAmount" column="payment_amount" />
+		<result property="paymentMethod" column="payment_method" />
+		<result property="paymentInfo" column="payment_info" />
+		<result property="paymentEnddate" column="payment_endDate" />
+	</resultMap>
+	
+	<insert id="insertPayment">
+		<![CDATA[
+			INSERT INTO payment 
+				( member_idx
+				  , payment_idx
+				  , payment_date
+				  , payment_amount
+				  , payment_method
+				  , payment_info
+				  , payment_endDate )
+			VALUES ( #{memberIdx}
+				  , default
+				  , default
+				  , 8900
+				  , #{paymentMethod}
+				  , #{paymentInfo}
+				  , null )
+		]]>
+	</insert>
+	
+	<select id="selectPayment" resultMap="payment">
+		<![CDATA[
+			SELECT
+				member_idx
+				, payment_date
+				, payment_amount
+				, payment_method
+				, payment_info
+				, payment_endDate
+			FROM payment
+			WHERE member_idx = #{memberIdx}
+			AND payment_endDate >= now()
+			]]>
+	</select>
+	
+	<select id="selectPaymentList" parameterType="jPlay.payment.vo.PaymentVO" resultType="egovMap">
+			SELECT
+								payment_date
+								, payment_amount
+								, payment_method
+								, payment_info
+								, payment_endDate
+					FROM payment
+				WHERE member_idx = #{memberIdx}
+				ORDER BY payment_date DESC
+				limit #{recordCountPerPage} offset #{firstIndex}	
+	</select>
+		
+	<select id="selectPaymentListTotCnt" parameterType="jPlay.payment.vo.PaymentVO" resultType="int">
+			SELECT COUNT(*) totcnt
+			FROM payment
+			WHERE member_idx = #{memberIdx}			
+	</select>
+</mapper>

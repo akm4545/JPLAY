@@ -1,0 +1,156 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="jPlay.admin.member.dao.AdminMemberMapper">
+
+	<resultMap id="member" type="jPlay.member.vo.MemberVO">
+		<result property="memberIdx" column="member_idx" />
+		<result property="memberId" column="member_id" />
+		<result property="memberPwd" column="member_pwd" />
+		<result property="memberName" column="member_name" />
+		<result property="memberEmail" column="member_email" />
+		<result property="memberTel" column="member_tel" />
+		<result property="memberJoindate" column="member_joinDate" />
+		<result property="memberDel" column="member_del" />
+		<result property="memberDeldate" column="member_delDate"/>
+	</resultMap>
+	
+	<resultMap id="groupMap" type="map">
+		<result property="totalJoin" column="totalNum"/>
+		<result property="Date" column="Date"/>
+	</resultMap>
+	
+	<resultMap id="groupDelMap" type="map">
+		<result property="totalDel" column="totalNum"/>
+		<result property="Date" column="Date"/>
+	</resultMap>
+	
+	<select id="selectMemberList" parameterType="jPlay.member.vo.MemberVO" resultType="egovMap">
+		SELECT
+			member_idx
+			, member_id
+			, member_pwd
+			, member_name
+			, member_email
+			, member_tel
+			, member_joinDate
+			, member_del
+		FROM member
+		<if test='searchKeyword != null and searchKeyword != ""'>
+			<where>
+				${searchCondition} LIKE CONCAT('%',#{searchKeyword},'%')
+			</where>
+		</if>		
+		ORDER BY member_joinDate DESC
+		limit #{recordCountPerPage} offset #{firstIndex}	
+	</select>
+	
+	<select id="selectMemberListTotCnt" parameterType="jPlay.member.vo.MemberVO" resultType="int">
+		SELECT COUNT(*) totcnt
+		FROM member
+		<if test='searchKeyword != null and searchKeyword != ""'>
+			<where>
+				${searchCondition} LIKE CONCAT('%',#{searchKeyword},'%')
+			</where>
+		</if>				
+	</select>
+	
+	<select id="selectMember" resultMap="member">
+		<![CDATA[
+			SELECT * FROM member
+			WHERE member_idx = #{memberIdx}
+		]]>
+	</select>
+	
+	<update id="updateMember">
+		<![CDATA[
+			UPDATE member
+			SET member_idx=#{memberIdx}
+				, member_id=#{memberId}
+				, member_pwd=#{memberPwd}
+				, member_name=#{memberName}
+				, member_email=#{memberEmail}
+				, member_tel=#{memberTel}
+				, member_joinDate=#{memberJoindate}
+				, member_del=#{memberDel}
+			WHERE member_idx = #{memberIdx}
+		]]>
+	</update>
+	
+	<select id="selectDeleteList" parameterType="jPlay.member.vo.MemberVO" resultType="egovMap">
+		SELECT
+			member_idx
+			, member_id
+			, member_pwd
+			, member_name
+			, member_email
+			, member_tel
+			, member_joinDate
+			, member_del
+			, member_delDate
+		FROM member
+		<if test='searchKeyword != null and searchKeyword != ""'>
+			<where>
+				${searchCondition} LIKE CONCAT('%',#{searchKeyword},'%')
+			</where>
+		</if>
+		WHERE member_del = 'Y'
+		ORDER BY member_joinDate DESC
+		limit #{recordCountPerPage} offset #{firstIndex}	
+	</select>
+	
+	<select id="selectDeleteListTotCnt" parameterType="jPlay.member.vo.MemberVO" resultType="int">
+		SELECT COUNT(*) totcnt
+		FROM member
+		WHERE member_del = 'Y';
+		<if test='searchKeyword != null and searchKeyword != ""'>
+			<where>
+				${searchCondition} LIKE CONCAT('%',#{searchKeyword},'%')
+			</where>
+		</if>		
+	</select>
+	
+	<delete id="deleteMember">
+		<![CDATA[
+			DELETE FROM member WHERE member_idx = #{idx}
+		]]>
+	</delete>
+	
+	<delete id="totalDelete" parameterType="java.util.List">
+		DELETE FROM member
+		<where>
+			<foreach item="member" collection="list">
+				OR member_idx = #{member}
+			</foreach>
+		</where>
+	</delete>
+	
+	<select id="selectGroupJoin" resultMap="groupMap">
+		SELECT COUNT(member.member_idx) AS totalNum, Date 
+		FROM member
+		RIGHT OUTER JOIN (SELECT
+							DATE_FORMAT(NOW() - INTERVAL (a.a) DAY,"%y-%m-%d") AS Date
+						  FROM (
+						  	SELECT 0 AS a UNION ALL SELECT 1 UNION ALL SELECT 2 
+						  	UNION ALL SELECT 3 UNION ALL SELECT 4 UNION ALL SELECT 5 
+						  	UNION ALL SELECT 6) AS a) AS b
+		ON DATE_FORMAT(member.member_joinDate,"%y-%m-%d") = b.Date
+    	GROUP BY Date
+    	ORDER BY Date
+	</select>
+	
+	<select id="selectGroupDel" resultMap="groupDelMap">
+		SELECT COUNT(del.member_idx) AS totalNum, Date 
+		FROM (SELECT * FROM member
+				WHERE member_del = "Y") as del
+		RIGHT OUTER JOIN (SELECT
+							DATE_FORMAT(NOW() - INTERVAL (a.a) DAY,"%y-%m-%d") AS Date
+						  FROM (
+						  	SELECT 0 AS a UNION ALL SELECT 1 UNION ALL SELECT 2 
+						  	UNION ALL SELECT 3 UNION ALL SELECT 4 UNION ALL SELECT 5 
+						  	UNION ALL SELECT 6) AS a) AS b
+		ON DATE_FORMAT(del.member_joinDate,"%y-%m-%d") = b.Date
+    	GROUP BY Date
+    	ORDER BY Date
+	</select>
+</mapper>

@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-4.0.xsd
+		http://www.springframework.org/schema/batch http://www.springframework.org/schema/batch/spring-batch-3.0.xsd">
+
+	<job id="jdbcToJdbcJob" parent="eGovBaseJob" xmlns="http://www.springframework.org/schema/batch">
+		<step id="jdbcToJdbcStep" parent="eGovBaseStep">
+			<tasklet>
+				<chunk reader="jdbcToJdbcJob.jdbcToJdbcStep.jdbcItemReader"
+					writer="jdbcToJdbcJob.jdbcToJdbcStep.ibatisItemWriter"
+					commit-interval="1" />
+			</tasklet>
+		</step>
+	</job>
+	
+	<bean id="jdbcToJdbcJob.jdbcToJdbcStep.jdbcItemReader" class="org.springframework.batch.item.database.JdbcPagingItemReader">
+   		<property name="dataSource" ref="dataSource"/>
+   		<property name="queryProvider">
+      		<bean class="org.springframework.batch.item.database.support.SqlPagingQueryProviderFactoryBean">
+      			<property name="dataSource" ref="dataSource" />
+				<property name="selectClause" value="select member_idx, member_del"/>
+				<property name="fromClause" value="from member"/>
+				<property name="whereClause" value="where member_del='Y'"/>
+				<property name="sortKey" value="member_idx"/>
+      		</bean>
+   		</property>
+   		
+	   <property name="pageSize" value="100"/>
+	   <property name="rowMapper">
+	       <bean class="jPlay.batch.job.MemberVORowMapper"/>
+	   </property>
+	</bean>
+	
+	<bean id="jdbcToJdbcJob.jdbcToJdbcStep.ibatisItemWriter" class="egovframework.rte.bat.core.item.database.EgovJdbcBatchItemWriter">
+		<property name="assertUpdates" value="true" />
+		<property name="itemPreparedStatementSetter">
+			<bean class="egovframework.rte.bat.core.item.database.support.EgovMethodMapItemPreparedStatementSetter" />
+		</property>
+		<property name="sql" value="DELETE FROM member WHERE member_del ='Y' AND TO_DAYS(now()) - TO_DAYS(member_delDate) >= 30" />
+		<!-- <property name="params" value="Y" /> -->
+		<property name="dataSource" ref="dataSource" />
+	</bean>
+</beans>

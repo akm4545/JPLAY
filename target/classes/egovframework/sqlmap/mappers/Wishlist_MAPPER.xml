@@ -1,0 +1,85 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="jPlay.wihsList.dao.WishlistMapper">
+	
+	<resultMap id="wishlist" type="jPlay.wihsList.vo.WishlistVO">
+		<result property="memberIdx" column="member_idx" />
+		<result property="movieIdx" column="movie_idx" />
+		<result property="wishlistDate" column="wishList_date" />
+	</resultMap>
+	
+	<insert id="insertWishlist">
+		<![CDATA[
+			INSERT INTO wishlist 
+				( member_idx
+				  , movie_idx
+				  , wishList_date )
+			VALUES ( #{memberIdx}
+				  , #{movieIdx}
+				  , default )
+		]]>
+	</insert>
+	
+	<update id="updateWishlist">
+		<![CDATA[
+			UPDATE wishlist
+			SET member_idx=#{memberIdx}
+				, movie_idx=#{movieIdx}
+				, wishList_date=#{wishlistDate}
+			]]>
+	</update>
+	
+	<delete id="deleteWishlist">
+		<![CDATA[
+			DELETE FROM wishlist
+			WHERE member_idx = #{memberIdx}
+				AND movie_idx = #{movieIdx}
+			]]>
+	</delete>
+	
+	<select id="selectWishlist" resultMap="wishlist">
+		<![CDATA[
+			SELECT
+				member_idx
+				, movie_idx
+				, wishList_date
+			FROM wishlist
+			WHERE member_idx = #{memberIdx}
+				AND movie_idx = #{movieIdx}  
+			]]>
+	</select>
+	
+	<select id="selectWishlistList" parameterType="jPlay.wihsList.vo.WishlistVO" resultType="egovMap">
+			SELECT
+								member_idx
+								, movie_idx
+								, wishList_date
+					FROM wishlist
+			WHERE 1=1
+			<if test="searchKeyword != null and searchKeyword != ''">
+				<if test="searchCondition == 0">AND
+					member_idx = #{searchKeyword}
+				</if>
+				<if test="searchCondition == 1">AND
+					movie_idx LIKE CONCAT('%',#{searchKeyword},'%')
+				</if>
+			</if>
+				ORDER BY 
+				limit #{recordCountPerPage} offset #{firstIndex}	
+	</select>	
+	<select id="selectWishlistListTotCnt" parameterType="jPlay.wihsList.vo.WishlistVO" resultType="int">
+			SELECT COUNT(*) totcnt
+			FROM wishlist
+			WHERE 1=1
+			<if test="searchKeyword != null and searchKeyword != ''">
+				<if test="searchCondition == 0">AND
+					member_idx = #{searchKeyword}
+				</if>
+				<if test="searchCondition == 1">AND
+					movie_idx LIKE CONCAT('%',#{searchKeyword},'%')
+				</if>
+			</if>			
+	</select>
+
+</mapper>

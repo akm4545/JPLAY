@@ -1,0 +1,87 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="jPlay.admin.userService.notify.dao.AdminNotifyMapper">
+	
+	<resultMap id="notify" type="jPlay.admin.userService.notify.vo.AdminNotifyVO">
+		<result property="notifyIdx" column="notify_idx" />
+		<result property="notifyType" column="notify_type" />
+		<result property="notifyTitle" column="notify_title" />
+		<result property="notifyContent" column="notify_content" />
+		<result property="notifyDate" column="notify_date" />
+	</resultMap>
+	
+	<insert id="insertNotify">
+		<![CDATA[
+			INSERT INTO notify 
+				( notify_idx
+				  , notify_title
+				  , notify_type
+				  , notify_content
+				  , notify_date )
+			VALUES ( default
+				  , #{notifyTitle}
+				  , #{notifyType}
+				  , #{notifyContent}
+				  , default )
+		]]>
+	</insert>
+	
+	<update id="updateNotify">
+		<![CDATA[
+			UPDATE notify
+			SET notify_title=#{notifyTitle}
+				, notify_type = #{notifyType}
+				, notify_content=#{notifyContent}
+				, notify_date = #{notifyDate}
+			WHERE notify_idx = #{notifyIdx}
+		]]>
+	</update>
+	
+	<delete id="deleteNotify">
+		<![CDATA[
+			DELETE FROM notify
+			WHERE notify_idx = #{notifyIdx} 
+			]]>
+	</delete>
+	
+	<select id="selectNotify" parameterType="jPlay.admin.userService.notify.vo.AdminNotifyVO" resultMap="notify">
+		<![CDATA[
+			SELECT
+				notify_idx
+				, notify_title
+				, notify_type
+				, notify_content
+				, notify_date
+			FROM notify
+			WHERE notify_idx = #{notifyIdx}
+			]]>
+	</select>
+	
+	<select id="selectNotifyList" parameterType="jPlay.admin.userService.notify.vo.AdminNotifyVO" resultType="egovMap">
+			SELECT
+								notify_idx
+								, notify_type
+								, notify_title
+								, notify_content
+								, notify_date
+					FROM notify
+			<if test='searchKeyword != null and searchKeyword != ""'>
+				<where>
+					${searchCondition} LIKE CONCAT('%',#{searchKeyword},'%')
+				</where>
+			</if>
+				ORDER BY notify_date DESC
+				limit #{recordCountPerPage} offset #{firstIndex}	
+	</select>	
+	<select id="selectNotifyListTotCnt" parameterType="jPlay.admin.userService.notify.vo.AdminNotifyVO" resultType="int">
+			SELECT COUNT(*) totcnt
+			FROM notify
+			<if test='searchKeyword != null and searchKeyword != ""'>
+				<where>
+					${searchCondition} LIKE CONCAT('%',#{searchKeyword},'%')
+				</where>
+			</if>			
+	</select>
+
+</mapper>

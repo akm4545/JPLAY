@@ -1,0 +1,25 @@
+/*
+  Css Name : button.css
+  Description : 버튼 CSS
+  Modification Information
+
+      수정일        수정자          수정내용
+    ----------     --------    ---------------------------
+    2008.10.15		장동한			최초 생성
+    2011.08.24		이기하			이미지 경로 수정
+
+    author   : 공통컴포넌트 개발팀 장동한
+    since    : 2008.10.15
+*/
+
+/* #paging .link, #paging .link a, #paging .link button, #paging .link input {
+border-style : none;
+background-color : transparent;
+cursor : pointer;
+}
+#paging .link, #paging .link a, #paging .link button, #paging .link input {
+color : black;
+}
+#paging .link *:hover, #paging .link *:active, #paging .link *:focus {
+color : red;
+} */

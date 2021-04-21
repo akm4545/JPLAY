@@ -1,0 +1,47 @@
+<beans xmlns="http://www.springframework.org/schema/beans" xmlns:context="http://www.springframework.org/schema/context" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-4.0.xsd         http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-4.0.xsd">
+
+    <context:component-scan base-package="jPlay">
+       <context:exclude-filter expression="org.springframework.stereotype.Controller" type="annotation"/>
+    </context:component-scan>
+
+	<bean class="org.springframework.context.support.ReloadableResourceBundleMessageSource" id="messageSource">
+		<property name="basenames">
+			<list>
+				<value>classpath:/egovframework/message/message-common</value>
+				<value>classpath:/egovframework/rte/fdl/idgnr/messages/idgnr</value>
+				<value>classpath:/egovframework/rte/fdl/property/messages/properties</value>
+			</list>
+		</property>
+		<property name="cacheSeconds">
+			<value>60</value>
+		</property>
+	</bean>
+	
+	<bean class="egovframework.rte.fdl.cmmn.trace.LeaveaTrace" id="leaveaTrace">
+		<property name="traceHandlerServices">
+			<list>
+				<ref bean="traceHandlerService"/>
+			</list>
+		</property>
+	</bean>
+
+	<bean class="egovframework.rte.fdl.cmmn.trace.manager.DefaultTraceHandleManager" id="traceHandlerService">
+		<property name="reqExpMatcher">
+			<ref bean="antPathMater"/>
+		</property>
+		<property name="patterns">
+			<list>
+				<value>*</value>
+			</list>
+		</property>
+		<property name="handlers">
+			<list>
+				<ref bean="defaultTraceHandler"/>
+			</list>
+		</property>
+	</bean>
+	
+	<bean class="org.springframework.util.AntPathMatcher" id="antPathMater"/>
+	<bean class="egovframework.rte.fdl.cmmn.trace.handler.DefaultTraceHandler" id="defaultTraceHandler"/>
+	 
+</beans>

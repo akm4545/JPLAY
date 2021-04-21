@@ -1,0 +1,106 @@
+<beans xmlns="http://www.springframework.org/schema/beans" xmlns:context="http://www.springframework.org/schema/context" xmlns:mvc="http://www.springframework.org/schema/mvc" xmlns:p="http://www.springframework.org/schema/p" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-4.0.xsd                 http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-4.0.xsd                 http://www.springframework.org/schema/mvc http://www.springframework.org/schema/mvc/spring-mvc-4.0.xsd">
+
+    <context:component-scan base-package="jPlay">
+        <context:include-filter expression="org.springframework.stereotype.Controller" type="annotation"/>
+        <context:exclude-filter expression="org.springframework.stereotype.Service" type="annotation"/>
+        <context:exclude-filter expression="org.springframework.stereotype.Repository" type="annotation"/>
+    </context:component-scan>
+
+    <bean class="org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerAdapter">
+    	<property name="messageConverters">
+			<list>
+				<bean class="org.springframework.http.converter.json.MappingJackson2HttpMessageConverter" />
+				<bean class="org.springframework.http.converter.xml.Jaxb2RootElementHttpMessageConverter" >
+				    <property name="supportedMediaTypes">
+					    <list>
+					        <value>*/*;charset=UTF-8</value>			        
+					    </list>
+					</property>	
+				</bean>
+			</list>
+		</property>
+        <!-- <property name="webBindingInitializer">
+            <bean class="egovframework.example.cmmn.web.EgovBindingInitializer"/>
+        </property> -->
+    </bean>
+    <bean class="org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerMapping">
+        <property name="interceptors">
+            <list>
+                <ref bean="localeChangeInterceptor"/>
+            </list>
+        </property>
+    </bean>
+    
+    <mvc:resources location="/resources/" mapping="/resources/**"/>
+    <mvc:resources location="/resources/movie/videos/" mapping="/movieInfo/**"/>
+    
+    <bean class="org.springframework.web.servlet.i18n.SessionLocaleResolver" id="localeResolver"/>
+    
+    <bean class="org.springframework.web.servlet.i18n.LocaleChangeInterceptor" id="localeChangeInterceptor">
+        <property name="paramName" value="language"/>
+    </bean>
+
+<!--     <bean class="org.springframework.web.servlet.handler.SimpleMappingExceptionResolver">
+        <property name="defaultErrorView" value="cmmn/egovError"/>
+        <property name="exceptionMappings">
+            <props>
+                <prop key="org.springframework.dao.DataAccessException">cmmn/dataAccessFailure</prop>
+                <prop key="org.springframework.transaction.TransactionException">cmmn/transactionFailure</prop>
+                <prop key="egovframework.rte.fdl.cmmn.exception.EgovBizException">cmmn/egovError</prop>
+                <prop key="org.springframework.security.AccessDeniedException">cmmn/egovError</prop>
+            </props>
+        </property>
+    </bean> -->
+
+    <bean class="org.springframework.web.servlet.view.UrlBasedViewResolver" p:order="1" p:prefix="/WEB-INF/jsp/" p:suffix=".jsp" p:viewClass="org.springframework.web.servlet.view.JstlView"/>
+
+    <!-- For Pagination Tag -->
+    <bean class="jPlay.common.service.EgovImagePaginationRenderer" id="imageRenderer"/>
+
+    <bean class="egovframework.rte.ptl.mvc.tags.ui.pagination.DefaultPaginationManager" id="paginationManager">
+        <property name="rendererType">
+            <map>
+                <entry key="image" value-ref="imageRenderer"/>
+            </map>
+        </property>
+    </bean>
+	<!-- /For Pagination Tag -->
+	
+    <mvc:view-controller path="/validator" view-name="validator/validator"/>
+    <!-- 메세지 프로퍼티 사용 빈 -->
+    <bean class="org.springframework.context.support.ResourceBundleMessageSource" id="messageSource">
+    	<property name="basenames">
+    		<list>
+    			<value>messages.message-common</value>
+    		</list>
+    	</property>
+    </bean>
+    
+    <bean id="jsonView" class="org.springframework.web.servlet.view.json.MappingJackson2JsonView">
+	    <property name="contentType" value="text/html;charset=utf-8" />
+	</bean>
+   
+    <mvc:interceptors>
+    	<mvc:interceptor>
+    		<mvc:mapping path="/member/loginCheck"/>
+    		<bean class="jPlay.interceptor.LoginInterceptor"/>
+    	</mvc:interceptor>
+    	<mvc:interceptor>    	
+    		<mvc:mapping path="/admin/**"/>
+    		<bean class="jPlay.interceptor.AdminPageInterceptor"/>
+    	</mvc:interceptor>
+    	<mvc:interceptor>
+    		<mvc:mapping path="/userService/**"/>
+    		<mvc:mapping path="/member/**"/>
+    		<mvc:exclude-mapping path="/userService/notifyInfo"/>
+    		<mvc:exclude-mapping path="/userService/notifyList"/>
+    		<mvc:exclude-mapping path="/userService/main"/>
+    		<mvc:exclude-mapping path="/member/login"/>
+    		<mvc:exclude-mapping path="/member/addMemberView"/>    	
+    		<mvc:exclude-mapping path="/member/addMember"/>
+    		<mvc:exclude-mapping path="/member/loginCheck"/>
+    		<mvc:exclude-mapping path="/member/overlapped"/>
+    		<bean class="jPlay.interceptor.MemberPageInterceptor"/>
+    	</mvc:interceptor>
+    </mvc:interceptors>
+</beans>

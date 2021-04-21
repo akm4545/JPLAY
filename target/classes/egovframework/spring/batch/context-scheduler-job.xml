@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-4.0.xsd">
+
+	<bean id="jobDetail" class="org.springframework.scheduling.quartz.JobDetailFactoryBean">
+		<property name="jobClass" value="jPlay.batch.scheduler.EgovJobLauncherDetails" />
+		<property name="group" value="quartz-batch" />
+		<property name="jobDataAsMap">
+			<map>
+				<entry key="jobName" value="jdbcToJdbcJob"/>
+				<entry key="jobLocator" value-ref="jobRegistry"/>
+				<entry key="jobLauncher" value-ref="jobLauncher"/>
+			</map>
+		</property>
+	</bean>
+	
+	<bean id="paymentJobDetail" class="org.springframework.scheduling.quartz.JobDetailFactoryBean">
+		<property name="jobClass" value="jPlay.batch.scheduler.EgovJobLauncherDetails" />
+		<property name="group" value="quartz-batch" />
+		<property name="jobDataAsMap">
+			<map>
+				<entry key="jobName" value="paymentUpdateJob"/>
+				<entry key="jobLocator" value-ref="jobRegistry"/>
+				<entry key="jobLauncher" value-ref="jobLauncher"/>
+			</map>
+		</property>
+	</bean>
+	
+	<bean id="tempDelete" class="org.springframework.scheduling.quartz.MethodInvokingJobDetailFactoryBean">
+		<property name="targetObject" ref="tempFileDelete"/>
+		<property name="targetMethod" value="tempDirectoryDelete"/>
+		<property name="concurrent" value="false"/>
+	</bean>
+	
+	
+</beans>

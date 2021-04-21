@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="jPlay.userService.qna.dao.QnaMapper">
+	
+	<resultMap id="qna" type="jPlay.userService.qna.vo.QnaVO">
+		<result property="qnaIdx" column="qna_idx" />
+		<result property="memberIdx" column="member_idx" />
+		<result property="qnaTitle" column="qna_title" />
+		<result property="qnaContent" column="qna_content" />
+		<result property="qnaQuestionsdate" column="qna_questionsDate" />
+		<result property="qnaType" column="qna_type" />
+		<result property="qnaAnswer" column="qna_answer" />
+		<result property="qnaAnswercontent" column="qna_answerContent" />
+		<result property="qnaAnswerdate" column="qna_answerDate" />
+	</resultMap>
+	
+	<insert id="insertQna">
+		<![CDATA[
+			INSERT INTO qna 
+				( qna_idx
+				  , member_idx
+				  , qna_title
+				  , qna_content
+				  , qna_questionsDate
+				  , qna_type
+				  , qna_answer
+				  , qna_answerContent
+				  , qna_answerDate )
+			VALUES ( default
+				  , #{memberIdx}
+				  , #{qnaTitle}
+				  , #{qnaContent}
+				  , default
+				  , #{qnaType}
+				  , "N"
+				  , null
+				  , null )
+		]]>
+	</insert>
+	
+	<select id="selectQnaList" parameterType="jPlay.userService.qna.vo.QnaVO" resultType="egovMap">
+			SELECT
+								qna_idx
+								, member_idx
+								, qna_title
+								, qna_content
+								, qna_questionsDate
+								, qna_type
+								, qna_answer
+								, qna_answerContent
+								, qna_answerDate
+					FROM qna
+				WHERE member_idx = #{memberIdx}
+				ORDER BY qna_questionsDate DESC
+				limit #{recordCountPerPage} offset #{firstIndex}	
+	</select>
+		
+	<select id="selectQnaListTotCnt" parameterType="jPlay.userService.qna.vo.QnaVO" resultType="int">
+			SELECT COUNT(*) totcnt
+			FROM qna
+			WHERE member_idx = #{memberIdx}
+	</select>
+
+</mapper>

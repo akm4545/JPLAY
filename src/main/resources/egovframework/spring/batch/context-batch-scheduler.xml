@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-4.0.xsd">
+
+	<bean class="org.springframework.scheduling.quartz.SchedulerFactoryBean">
+		<property name="triggers">
+			<list>
+				<ref bean="cronTrigger"/>
+				<ref bean="temp"/>
+				<ref bean="paymentCronTrigger"/>
+			</list>
+		</property>
+	</bean>
+	<!-- 테스트용 크론식 0 0/1 * * * ?  -->
+	<!-- 설정 크론식 0 0 2 * * ? -->
+	<bean id="paymentCronTrigger" class="org.springframework.scheduling.quartz.CronTriggerFactoryBean">
+		<property name="jobDetail" ref="paymentJobDetail" />
+		<property name="cronExpression" value="0 0 2 * * ?" />
+	</bean>
+	<bean id="cronTrigger" class="org.springframework.scheduling.quartz.CronTriggerFactoryBean">
+		<property name="jobDetail" ref="jobDetail" />
+		<property name="cronExpression" value="0 0 2 * * ?" />
+	</bean>
+	<bean id="temp" class="org.springframework.scheduling.quartz.CronTriggerFactoryBean">
+		<property name="jobDetail" ref="tempDelete" />
+		<property name="cronExpression" value="0 0 2 * * ?" />
+	</bean>
+</beans>

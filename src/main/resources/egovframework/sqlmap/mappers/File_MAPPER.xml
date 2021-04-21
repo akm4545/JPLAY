@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="jPlay.admin.file.dao.AdminFileMapper">
+	
+	<resultMap id="file" type="jPlay.admin.movie.vo.AdminMovieVO">
+		<result property="movieIdx" column="movie_idx" />
+		<result property="fileName" column="file_name" />
+		<result property="fileType" column="file_type" />
+		<result property="fileClassification" column="file_classification" />
+	</resultMap>
+	
+	<insert id="insertFile">
+		INSERT INTO file 
+			( movie_idx
+			  , file_name
+			  , file_type
+			  , file_classification)
+		VALUES 
+			<foreach item="item" collection="list" separator=",">
+				(
+				<if test="item.movieIdx != 0">
+					#{item.movieIdx}
+				</if>
+				<if test="item.movieIdx == 0">
+					null
+				</if>
+				  , #{item.fileName}
+				  , #{item.fileType}
+				  , #{item.fileClassification})
+			</foreach>
+	</insert>
+	
+	<update id="updateFile">
+		<foreach item="item" collection="list" index="index" separator=";">
+			UPDATE file
+			SET file_name=#{item.fileName}
+				, file_type=#{item.fileType}
+				, file_classification = #{item.fileClassification}
+			WHERE movie_Idx = ${item.movieIdx}
+				AND file_classification = #{item.fileClassification}
+		</foreach>
+	</update>
+	
+	<delete id="deleteFile">
+		<![CDATA[
+			DELETE FROM file
+			WHERE movie_idx = #{movieIdx} 
+		]]>
+	</delete>
+	
+	<select id="selectFile" resultMap="file">
+		<![CDATA[
+			SELECT
+				movie_idx
+				, file_name
+				, file_type
+				, file_classification
+			FROM file
+			WHERE movie_idx = #{movieIdx}
+		]]>
+	</select>
+</mapper>

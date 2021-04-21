@@ -1,0 +1,147 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE form-validation PUBLIC 
+    "-//Apache Software Foundation//DTD Commons Validator Rules Configuration 1.1//EN" 
+    "http://jakarta.apache.org/commons/dtds/validator_1_1.dtd">
+
+<form-validation>
+    <formset>
+        <form name="memberVO">
+        	<field property="memberId" depends="required,minlength">
+        		<arg0 key="member.memberId"/>
+        		<arg1 key="6"/>
+        		<var>
+        			<var-name>minlength</var-name>
+        			<var-value>6</var-value>
+        		</var>
+			</field>
+			<field property="memberId" depends="maxlength">
+				<arg0 key="member.memberId"/>
+        		<arg1 key="11"/>
+        		<var>        		
+        			<var-name>maxlength</var-name>
+        			<var-value>11</var-value>
+        		</var>
+			</field>
+			<field property="memberId" depends="mask">
+				<arg0 key="memberInvalid.memberId"/>
+        		<var>        		
+        			<var-name>mask</var-name>
+        			<var-value>^[a-zA-Z]{1}[a-zA-Z0-9]{5,10}$</var-value>
+        		</var>
+			</field>
+			<field property="memberPwd" depends="required,minlength">
+                <arg0 key="member.memberPwd"/>
+                <arg1 key="8"/>
+        		<var>
+        			<var-name>minlength</var-name>
+        			<var-value>8</var-value>
+        		</var>
+            </field>
+            <field property="memberPwd" depends="maxlength">
+                <arg0 key="member.memberPwd"/>
+                <arg1 key="11"/>
+        		<var>
+        			<var-name>maxlength</var-name>
+        			<var-value>11</var-value>
+        		</var>
+            </field>
+            <field property="memberPwd" depends="mask">
+            	<arg0 key="memberInvalid.memberPwd"/>
+        		<var>        		
+        			<var-name>mask</var-name>
+        			<var-value>^(?=.*[A-Za-z])(?=.*[0-9])[A-Za-z0-9]{8,11}$</var-value>
+        		</var>
+			</field>
+        	<field property="memberName" depends="required,minlength">
+        		<arg0 key="member.memberName" />
+        		<arg1 key="2"/>
+        		<var>
+        			<var-name>minlength</var-name>
+        			<var-value>2</var-value>
+        		</var>
+			</field>
+			<field property="memberName" depends="maxlength">
+        		<arg0 key="member.memberName" />
+        		<arg1 key="4"/>
+        		<var>
+        			<var-name>maxlength</var-name>
+        			<var-value>4</var-value>
+        		</var>
+			</field>
+			<field property="memberName" depends="mask">
+        		<arg0 key="memberInvalid.memberName"/>
+        		<var>
+	        		<var-name>mask</var-name>
+	        		<var-value>^[가-힣]{2,4}$</var-value>        		
+        		</var>
+			</field>
+			<field property="memberEmail" depends="required,email">
+        		<arg0 key="member.memberEmail" />
+			</field>
+			<field property="memberTel" depends="required,mask">
+        		<arg0 key="memberInvalid.memberTel" />
+        		<var>
+        			<var-name>mask</var-name>
+        			<var-value>^01(?:0|1|[6-9])(\d{3}|\d{4})(\d{4})$</var-value>
+        		</var>
+			</field>
+        </form>
+    </formset>
+	
+	<formset>
+		<form name="adminMovieVO">
+			<field property="movieTitle" depends="required">
+				<arg0 key="movie.movieTitle"/>
+			</field>
+			<field property="movieOpeningdate" depends="required">
+				<arg0 key="movie.movieOpeningdate"/>
+			</field>
+			<field property="movieSynopsis" depends="required">
+				<arg0 key="movie.movieSynopsis"/>
+			</field>
+			<field property="movieGenre" depends="required">
+				<arg0 key="movie.movieGenre"/>
+			</field>
+			<field property="movieAge" depends="required">
+				<arg0 key="movie.movieAge"/>
+			</field>
+			<field property="movieActor" depends="required">
+				<arg0 key="movie.movieActor"/>
+			</field>
+			<field property="movieDirector" depends="required">
+				<arg0 key="movie.movieDirector"/>
+			</field>
+		</form>
+	</formset>
+	
+	<formset>
+		<form name="qnaVO">
+			<field property="qnaTitle" depends="required">
+				<arg0 key="qna.qnaTitle"/>
+			</field>
+			<field property="qnaType" depends="required">
+				<arg0 key="qna.qnaType"/>
+			</field>
+			<field property="qnaContent" depends="required">
+				<arg0 key="qna.qnaContent"/>
+			</field>
+			<field property="qnaAnswercontent" depends="required">
+				<arg0 key="qna.qnaAnswercontent"/>
+			</field>
+		</form>
+	</formset>
+	
+	<formset>
+		<form name="notifyVO">
+			<field property="notifyTitle" depends="required">
+				<arg0 key="notify.notifyTitle"/>
+			</field>
+			<field property="notifyType" depends="required">
+				<arg0 key="notify.notifyType"/>
+			</field>
+			<field property="notifyContent" depends="required">
+				<arg0 key="notify.notifyContent"/>
+			</field>
+		</form>
+	</formset>
+</form-validation>

@@ -1,0 +1,165 @@
+@charset "UTF-8";
+.movieContent *{
+	position: relative;
+}
+			
+.movieContent {
+	width: 100%;
+	height: 100%;
+	display: -webkit-box;
+	display: -webkit-flex;
+	display: -ms-flexbox;
+	display: flex;
+	-webkit-box-pack: center;
+	-webkit-justify-content: center;
+	    -ms-flex-pack: center;
+	        justify-content: center;
+	-webkit-box-align: stretch;
+	-webkit-align-items: stretch;
+	    -ms-flex-align: stretch;
+	        align-items: stretch;
+}
+
+.movieContent div.frame {
+	-webkit-box-flex: 1;
+	-webkit-flex: 1;
+	    -ms-flex: 1;
+	        flex: 1;
+	display: -webkit-box;
+	display: -webkit-flex;
+	display: -ms-flexbox;
+	display: flex;
+	-webkit-box-pack: center;
+	-webkit-justify-content: center;
+	    -ms-flex-pack: center;
+	        justify-content: center;
+	-webkit-box-align: center;
+	-webkit-align-items: center;
+	    -ms-flex-align: center;
+	        align-items: center;
+	overflow: hidden;
+	cursor: pointer;
+	margin: 10px 30px;
+}
+
+.movieContent div.img,
+.movieContent div.border {
+	position: absolute;
+	top: 0;
+	right: 0;
+	bottom: 0;
+	left: 0;
+}
+
+.movieContent div.img {
+	-webkit-transition: all 600ms cubic-bezier(.4,.25,.3,1);
+	transition: all 600ms cubic-bezier(.4,.25,.3,1);
+	background-size: cover;
+}
+
+.movieContent div.border {
+	-webkit-transition: all 500ms cubic-bezier(.5,.3,.25,1);
+	transition: all 500ms cubic-bezier(.5,.3,.25,1);
+	display: -webkit-box;
+	display: -webkit-flex;
+	display: -ms-flexbox;
+	display: flex;
+	-webkit-box-pack: center;
+	-webkit-justify-content: center;
+	    -ms-flex-pack: center;
+	        justify-content: center;
+	-webkit-box-align: center;
+	-webkit-align-items: center;
+	    -ms-flex-align: center;
+	        align-items: center;
+	box-shadow: inset 0px 0px 0px 0px hsla(212,18%,8%,.6);
+}
+
+.movieContent div.frame:first-of-type div.img {
+	background-position: 80%;
+}
+
+.movieContent div.frame:nth-of-type(2) div.img {
+	background-position: 30%;
+}
+
+.movieContent div.frame:last-of-type div.img {
+}
+
+.movieContent div.border > * {
+	-webkit-transition: all 550ms cubic-bezier(.3,.2,.25,1);
+	transition: all 550ms cubic-bezier(.3,.2,.25,1);
+	font-size: 5rem;
+	position: absolute;
+	top: 2.5vw;
+	right: 2.5vw;
+	bottom: 2.5vw;
+	left: 2.5vw;
+	display: -webkit-box;
+	display: -webkit-flex;
+	display: -ms-flexbox;
+	display: flex;
+	-webkit-box-pack: center;
+	-webkit-justify-content: center;
+	    -ms-flex-pack: center;
+	        justify-content: center;
+	-webkit-box-align: center;
+	-webkit-align-items: center;
+	    -ms-flex-align: center;
+	        align-items: center;
+	color: #fefefa;
+	border: 1px solid transparent;
+	opacity: 0;
+	-webkit-transform: scale(1.8);
+	        transform: scale(1.8);
+	-webkit-user-select: none;
+	   -moz-user-select: none;
+	    -ms-user-select: none;
+	        user-select: none;
+}
+
+.movieContent div.frame:hover div.img {
+	-webkit-transform: scale(1.25);
+	        transform: scale(1.25);
+	-webkit-filter: grayscale(.9) brightness(.7) contrast(1.35);
+	        filter: grayscale(.9) brightness(.7) contrast(1.35);
+}
+
+.movieContent div.frame:hover div.border {
+	box-shadow: inset 0px 0px 0px 2.5vw hsla(0,0%,6%,.85);
+}
+
+.movieContent div.frame:hover div.border h1 {
+	opacity: 1;
+	-webkit-transform: scale(1);
+	        transform: scale(1);
+	border: 1px solid #fefefa;
+}
+
+.movieContent div.frame:active div.border {
+	-webkit-transition: none;
+	transition: none;
+	box-shadow: inset 0px 0px 0px 3.5vw hsla(0,0%,6%,.85);
+}
+
+.movieContent div.frame:active div.border h1 {
+	-webkit-transition: none;
+	transition: none;
+	-webkit-transform: scale(.9);
+	        transform: scale(.9);
+}
+
+@media screen and (max-width: 1100px) {
+    .movieContent{
+    	flex-flow : column;
+    }
+    .frame{
+    	margin: 0px !important;
+    	margin: 40px !important;
+    }
+    
+    .frame-sm{
+    	height: 1500px !important;
+    }
+}
+

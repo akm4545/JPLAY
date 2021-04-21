@@ -1,0 +1,141 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="jPlay.admin.movie.dao.AdminMovieMapper">
+	
+	<resultMap id="movie" type="jPlay.admin.movie.vo.AdminMovieVO">
+		<result property="movieIdx" column="movie_idx" />
+		<result property="movieTitle" column="movie_title" />
+		<result property="movieOpeningdate" column="movie_openingDate" />
+		<result property="movieSynopsis" column="movie_synopsis" />
+		<result property="movieRating" column="movie_rating" />
+		<result property="movieGenre" column="movie_genre" />
+		<result property="movieAge" column="movie_age" />
+		<result property="movieDirector" column="movie_director" />
+		<result property="movieActor" column="movie_actor" />
+		<result property="movieViewcount" column="movie_viewCount" />
+	</resultMap>
+	
+	<resultMap type="map" id="topGenre">
+		<result property="viewCount" column="viewCount" />
+		<result property="movieGenre" column="movie_genre" />
+	</resultMap>
+	
+	<resultMap type="map" id="topMovie">
+		<result property="viewCount" column="movie_viewCount" />
+		<result property="movieTitle" column="movie_title" />
+	</resultMap>
+	
+	<insert id="insertMovie">
+		<selectKey resultType="int" keyProperty="movieIdx" order="AFTER">
+			SELECT max(movie_idx) from movie;
+      	</selectKey>
+		<![CDATA[
+			INSERT INTO movie 
+				( movie_idx
+				  , movie_title
+				  , movie_openingDate
+				  , movie_synopsis
+				  , movie_rating
+				  , movie_genre
+				  , movie_age
+				  , movie_director
+				  , movie_actor
+				  , movie_viewCount )
+			VALUES ( default
+				  , #{movieTitle}
+				  , #{movieOpeningdate}
+				  , #{movieSynopsis}
+				  , default
+				  , #{movieGenre}
+				  , #{movieAge}
+				  , #{movieDirector}
+				  , #{movieActor}
+				  , default )
+		]]>
+	</insert>
+	
+	<update id="updateMovie">
+		<![CDATA[
+			UPDATE movie
+			SET movie_title=#{movieTitle}
+				, movie_openingDate=#{movieOpeningdate}
+				, movie_synopsis=#{movieSynopsis}
+				, movie_genre=#{movieGenre}
+				, movie_age=#{movieAge}
+				, movie_director=#{movieDirector}
+				, movie_actor=#{movieActor}
+			WHERE movie_idx=#{movieIdx}
+		]]>
+	</update>
+	
+	<delete id="deleteMovie">
+		<![CDATA[
+			DELETE FROM movie
+			WHERE movie_idx = #{movieIdx} 
+		]]>
+	</delete>
+	
+	<select id="selectMovie" resultMap="movie">
+		<![CDATA[
+			SELECT
+				movie_idx
+				, movie_title
+				, movie_openingDate
+				, movie_synopsis
+				, movie_rating
+				, movie_genre
+				, movie_age
+				, movie_director
+				, movie_actor
+				, movie_viewCount
+			FROM movie
+			WHERE movie_idx = #{movieIdx}
+		]]>
+	</select>
+	
+	<select id="selectMovieList" parameterType="jPlay.admin.movie.vo.AdminMovieVO" resultType="egovMap">
+		SELECT
+			movie_idx
+			, movie_title
+			, movie_openingDate
+			, movie_synopsis
+			, movie_rating
+			, movie_genre
+			, movie_age
+			, movie_director
+			, movie_actor
+			, movie_viewCount
+		FROM movie
+		<if test='searchKeyword != null and searchKeyword != ""'>
+			<where>
+				${searchCondition} LIKE CONCAT('%',#{searchKeyword},'%')
+			</where>
+		</if>
+			ORDER BY movie_idx DESC
+			limit #{recordCountPerPage} offset #{firstIndex}	
+	</select>	
+	
+	<select id="selectMovieListTotCnt" parameterType="jPlay.admin.movie.vo.AdminMovieVO" resultType="int">
+		SELECT COUNT(*) totcnt
+		FROM movie
+		<if test='searchKeyword != null and searchKeyword != ""'>
+			<where>
+				${searchCondition} LIKE CONCAT('%',#{searchKeyword},'%')
+			</where>
+		</if>			
+	</select>
+	
+	<select id="selectTopGenre" resultMap="topGenre">
+		SELECT sum(movie_viewCount) as viewCount, movie_genre 
+		FROM movie
+		GROUP BY movie_genre
+    	ORDER BY viewCount DESC;
+	</select>
+	
+	<select id="selectTopMovie" resultMap="topMovie">
+		SELECT movie_title, movie_viewCount 
+		FROM movie
+    	ORDER BY movie_viewCount DESC;
+	</select>
+</mapper>
