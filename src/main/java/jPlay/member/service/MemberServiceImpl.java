@@ -20,6 +20,7 @@ public class MemberServiceImpl extends EgovAbstractServiceImpl implements
     @Resource(name="memberMapper")
     private MemberMapper memberDAO;
     
+    @Override
     public String insertMember(MemberVO vo) throws Exception {
     	LOGGER.debug(vo.toString());
     	
@@ -29,11 +30,13 @@ public class MemberServiceImpl extends EgovAbstractServiceImpl implements
     	
         return null;
     }
-
+    
+    @Override
     public void updateMember(MemberVO vo) throws Exception {
         memberDAO.updateMember(vo);
     }
     
+    @Override
     public MemberVO selectMember(MemberVO vo) throws Exception {
     	
         MemberVO resultVO = memberDAO.selectMember(vo);

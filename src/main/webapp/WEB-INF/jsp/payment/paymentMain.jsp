@@ -237,7 +237,7 @@
 							<div class="btn-group" style="height: 100px;">
 								<button class="btn btn-outline-secondary" onclick="pay_method('pay_card')"><i class="far fa-credit-card"></i>신용카드</button>
 								<button class="btn btn-outline-secondary" onclick="pay_method('pay_phone')"><i class="fas fa-mobile-alt"></i>핸드폰</button>
-								<button class="btn btn-outline-secondary" onclick="pay_method('pay_kakao')"><i class="fas fa-comment-dollar"></i>카카오페이</button>
+								<button class="btn btn-outline-secondary kakaoPay"><i class="fas fa-comment-dollar"></i>카카오페이</button>
 							</div>
 						</div>
 						<div class="col-sm-1"></div>
@@ -383,6 +383,9 @@
 	<script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
 	<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/2.1.3/TweenMax.min.js"></script>
   	<script src="<c:url value='/resources/js/coming-soon.js'/>"></script>
+	  	
+  	<!-- 결제 api -->
+	<script type="text/javascript" src="https://cdn.iamport.kr/js/iamport.payment-1.1.5.js"></script>
 	<script>
 		function paging(pageNo){
 			document.listForm.pageIndex.value = pageNo;
@@ -585,6 +588,91 @@
 				$("#select_phone").text($("#phone_com option:selected").val());
 			}
 		}
+		
+		/* 결제 API */
+		var IMP = window.IMP; // 생략가능
+		IMP.init('imp76657686'); // 'iamport' 대신 부여받은 "가맹점 식별코드"를 사용
+		
+		const AMOUNT_TOTAL = 1;
+		
+		document.querySelector(".kakaoPay").addEventListener('click', function(){
+			IMP.request_pay({ /* 결제 요청에 필요한 정보 */
+			    pg : 'kakaopay',
+			    pay_method : 'card',
+			    /* 주문 전에 DB에 결제 정보를 저장하고 서버가 생성한 주문번호를 할당하는것을 추천  현재는 완성된 프로젝트에 삽입하기 때문에 자바스크립트로 생성 처리함*/
+			    merchant_uid : 'merchant_' + new Date().getTime(),
+			    name : '주문명:JPLAY - 이용권',
+			    amount : AMOUNT_TOTAL,
+			    buyer_email : '${memberInfo.memberEmail}',
+			    buyer_name : '${memberInfo.memberName}',
+			    buyer_tel : '${memberInfo.memberTel}',
+			    m_redirect_url : '<c:url value="/payment/main"/>'
+			}, function(rsp) {
+			    if ( rsp.success ) {
+			    	/* 결제 성공 로직 */
+			    	//[1] 서버단에서 결제정보 조회를 위해 jQuery ajax로 imp_uid 전달하기
+			    	jQuery.ajax({
+			    		url: "<c:url value='/payment/complete'/>", //cross-domain error가 발생하지 않도록 주의해주세요
+			    		/* 가맹점 서버  */
+			    		type: 'POST',
+			    		dataType: 'json',
+			    		data: {
+			    			imp_uid: rsp.imp_uid,
+			                merchant_uid: rsp.merchant_uid, /* 서버로 전달하여 저장 */
+			                amount : AMOUNT_TOTAL /* 결제 금액 전송(대조용) */
+			    		}
+			    	}).done(function(data) {
+			    		//[2] 서버에서 REST API로 결제정보확인 및 서비스루틴이 정상적인 경우
+			    		/* 가맹점 서버에서 결제정보 조회
+			    			가맹점 서버에 imp_uid(거래 고유 번호)를 전달하면 아임포트 서버에서 imp_uid로 결제 정보를 조회할 수 있습니다. 
+			    			또, 가맹점에서 관리하는 주문번호인 merchant_uid로 가맹점의 데이터베이스에서 주문 정보를 조회합니다. 
+			    			조회한 정보들을 통해 결제 위변조 여부를 검증하고, 서비스의 데이터베이스에 저장할 수 있습니다.
+			    			거래정보 조회를 서버사이드에서 수행하는 이유
+
+			    			거래정보를 조회하기 위해서는 관리자 대시보드에서 발급받은 REST API키와 
+			    			REST API Secret으로 토큰(access_token)을 발급받은 후, 
+			    			해당 토큰을 결제 정보를 조회 API 요청에 포함해야합니다. 
+			    			토큰 발급 과정을 클라이언트에서 수행하면 REST API키와 REST API Secret이 노출되어 보안상 
+			    			안전하지 않기 때문에 토큰 발급 및 거래 정보 조회 과정은 반드시 서버사이드에서 수행해야합니다.
+			    		*/
+			    		if (data.response != null) {
+			    			if(data.response.status === "paid"){
+			    				var msg = '결제가 완료되었습니다.';
+				    			msg += '\n고유ID : ' + rsp.imp_uid;
+				    			msg += '\n상점 거래ID : ' + rsp.merchant_uid;
+				    			msg += '\결제 금액 : ' + rsp.paid_amount;
+				    			msg += '카드 승인번호 : ' + rsp.apply_num;
+				    			
+				    			alert(msg);	
+			    			}
+			    		} else {
+			    			/* 결제 실패 로직 */
+			    			//[3] 아직 제대로 결제가 되지 않았습니다.
+			    			//[4] 결제된 금액이 요청한 금액과 달라 결제를 자동취소처리하였습니다.
+			    			jQuery.ajax({
+			    		        url: "<c:url value='/payment/cancel'/>",
+			    		       	type: "POST",
+			    		        contentType: "application/json",
+			    		        data: JSON.stringify({
+			    		          merchant_uid: rsp.merchant_uid, // 주문번호
+			    		          cancel_request_amount: AMOUNT_TOTAL, // 환불금액
+			    		          reason: "테스트 결제 환불" // 환불사유
+			    		        }),
+			    		        dataType: "json"
+			    		      }).done(function(data){
+			    		    	console.log(data);  
+			    		      });
+			    			alert("결제가 실패하여 자동취소 처리 되었습니다.");
+			    		}
+			    	});
+			    } else {
+			        var msg = '결제에 실패하였습니다.';
+			        msg += '에러내용 : ' + rsp.error_msg;
+			        
+			        alert(msg);
+			    }
+			});	
+		});
 	</script>
 </body>
 </html>

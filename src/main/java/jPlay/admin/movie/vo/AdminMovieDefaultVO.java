@@ -33,7 +33,6 @@ public class AdminMovieDefaultVO implements Serializable {
 
     /** recordCountPerPage */
     private int recordCountPerPage = 10;
-    
         
 	public int getFirstIndex() {
 		return firstIndex;

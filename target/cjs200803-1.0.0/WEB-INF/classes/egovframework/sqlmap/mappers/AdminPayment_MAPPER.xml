@@ -1,0 +1,118 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="jPlay.admin.payment.dao.AdminPaymentMapper">
+	
+	<resultMap id="payment" type="jPlay.payment.vo.PaymentVO">
+		<result property="memberIdx" column="member_idx" />
+		<result property="paymentIdx" column="payment_idx" />
+		<result property="paymentDate" column="payment_date" />
+		<result property="paymentAmount" column="payment_amount" />
+		<result property="paymentMethod" column="payment_method" />
+		<result property="paymentInfo" column="payment_info" />
+		<result property="paymentEnddate" column="payment_endDate" />
+	</resultMap>
+	
+	<resultMap type="map" id="totalPay">
+		<result property="date" column="Date" />
+		<result property="totalPay" column="totalPay" />
+	</resultMap>
+	
+	<resultMap type="map" id="methodCount">
+		<result property="methodCount" column="methodCount" />
+		<result property="methodType" column="payment_method" />
+	</resultMap>
+	
+	<update id="updatePayment" parameterType="jPlay.payment.vo.PaymentVO">
+		<![CDATA[
+			UPDATE payment
+			SET payment_date=#{paymentDate}
+				, payment_amount=#{paymentAmount}
+				, payment_method=#{paymentMethod}
+				, payment_info=#{paymentInfo}
+				, payment_endDate=#{paymentEnddate}
+			WHERE payment_idx = #{paymentIdx}
+			]]>
+	</update>
+	
+	<delete id="deletePayment" parameterType="jPlay.payment.vo.PaymentVO">
+		<![CDATA[
+			DELETE FROM payment 
+			WHERE payment_idx = #{paymentIdx}
+			]]>
+	</delete>
+	
+	<select id="selectPayment" resultMap="payment">
+		<![CDATA[
+			SELECT
+				member.member_idx
+				, member.member_name
+				, member.member_id
+				, payment.payment_idx
+				, payment.payment_date
+				, payment.payment_amount
+				, payment.payment_method
+				, payment.payment_info
+				, payment.payment_endDate
+			FROM payment
+			INNER JOIN member
+				ON payment.member_idx = member.member_idx
+				AND payment.payment_idx = #{paymentIdx}
+			]]>
+	</select>
+	
+	<select id="selectPaymentList" parameterType="jPlay.payment.vo.PaymentVO" resultType="egovMap">
+			SELECT
+								member.member_idx
+								, member.member_name
+								, member.member_id
+								, payment.payment_idx
+								, payment.payment_date
+								, payment.payment_amount
+								, payment.payment_method
+								, payment.payment_info
+								, payment.payment_endDate
+					FROM payment
+			INNER JOIN member
+				ON payment.member_idx = member.member_idx
+			<if test='searchKeyword != null and searchKeyword != ""'>
+				<where>
+					${searchCondition} LIKE CONCAT('%',#{searchKeyword},'%')
+				</where>
+			</if>
+			ORDER BY payment_date DESC
+			limit #{recordCountPerPage} offset #{firstIndex}	
+	</select>
+	
+	<select id="selectPaymentListTotCnt" parameterType="jPlay.payment.vo.PaymentVO" resultType="int">
+			SELECT COUNT(*) totcnt
+			FROM payment
+			INNER JOIN member
+				ON payment.member_idx = member.member_idx
+			<if test='searchKeyword != null and searchKeyword != ""'>
+				<where>
+					${searchCondition} LIKE CONCAT('%',#{searchKeyword},'%')
+				</where>
+			</if>		
+	</select>
+	
+	<select id="selectTotalPay" resultMap="totalPay">
+		SELECT IFNULL(SUM(payment.payment_amount),0) AS totalPay, Date 
+		FROM payment
+		RIGHT OUTER JOIN (SELECT
+							DATE_FORMAT(NOW() - INTERVAL (a.a) DAY,"%y-%m-%d") AS Date
+						  FROM (
+						  	SELECT 0 AS a UNION ALL SELECT 1 UNION ALL SELECT 2 
+						  	UNION ALL SELECT 3 UNION ALL SELECT 4 UNION ALL SELECT 5 
+						  	UNION ALL SELECT 6) AS a) AS b
+		ON DATE_FORMAT(payment.payment_date,"%y-%m-%d") = b.Date
+    	GROUP BY Date
+    	ORDER BY Date;
+	</select>
+	
+	<select id="selectTotalPayMethod" resultMap="methodCount">
+		SELECT COUNT(payment_method) as methodCount, payment_method 
+		FROM payment
+		GROUP BY payment_method
+	</select>
+</mapper>

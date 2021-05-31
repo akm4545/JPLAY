@@ -1,0 +1,104 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="jPlay.member.dao.MemberMapper">
+
+	<resultMap id="member" type="jPlay.member.vo.MemberVO">
+		<result property="memberIdx" column="member_idx" />
+		<result property="memberId" column="member_id" />
+		<result property="memberPwd" column="member_pwd" />
+		<result property="memberName" column="member_name" />
+		<result property="memberEmail" column="member_email" />
+		<result property="memberTel" column="member_tel" />
+		<result property="memberJoindate" column="member_joinDate" />
+		<result property="memberDel" column="member_del" />
+		<result property="memberDeldate" column="member_delDate"/>
+	</resultMap>
+	
+	<insert id="insertMember">
+		<![CDATA[
+			INSERT INTO member 
+				( member_idx
+				  , member_id
+				  , member_pwd
+				  , member_name
+				  , member_email
+				  , member_tel
+				  , member_joinDate
+				  , member_del
+				 )
+			VALUES ( default
+				  , #{memberId}
+				  , #{memberPwd}
+				  , #{memberName}
+				  , #{memberEmail}
+				  , #{memberTel}
+				  , default
+				  , default
+				  )
+		]]>
+	</insert>
+	
+	<select id="overlapped" resultType="int">
+		<![CDATA[
+			select count(*) from member
+			where member_id = #{id}
+		]]>
+	</select>
+	
+	<select id="loginCheck" resultMap="member">
+		<![CDATA[
+			SELECT * FROM member
+			WHERE member_id = #{memberId} 
+				AND member_pwd = #{memberPwd}
+				AND member_del = "N"
+		]]>
+	</select>
+	
+	<select id="selectMember" parameterType="jPlay.member.vo.MemberVO" resultMap="member">
+		<![CDATA[
+			SELECT * FROM member
+			WHERE member_idx = #{memberIdx}
+			AND member_pwd = #{memberPwd}
+		]]>
+	</select>
+	
+	<update id="updateMember">
+		<![CDATA[
+			UPDATE member
+			SET member_pwd=#{memberPwd}
+				, member_name=#{memberName}
+				, member_email=#{memberEmail}
+				, member_tel=#{memberTel}
+			WHERE member_idx = #{memberIdx}
+		]]>
+	</update>
+	
+	<select id="idSearch" resultMap="member">
+		<![CDATA[
+			SELECT * FROM member
+			WHERE member_email = #{memberEmail}
+		]]>
+	</select>
+	
+	<select id="pwdSearch" resultMap="member">
+		<![CDATA[
+			SELECT * FROM member
+			WHERE member_id = #{memberId}
+			AND member_email = #{memberEmail}
+		]]>
+	</select>
+	
+	<update id="deleteMember">
+		UPDATE member
+			SET member_del="Y"
+				, member_delDate = now()
+			WHERE member_id = #{memberId}
+	</update>
+	
+	<select id="emailCheck" resultMap="member">
+		SELECT member_email
+		FROM member
+		WHERE member_email = #{email}
+	</select>
+</mapper>

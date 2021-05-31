@@ -105,8 +105,7 @@ public class AdminMemberController {
 		
 		MemberVO vo = adminMemberService.selectMember(memberIdx);
 		
-		vo.setMemberPwd(cryptoService.decrypt(vo.getMemberPwd()));
-		
+		vo.setMemberPwd(cryptoService.decrypt(vo.getMemberPwd()));		
 		vo.setPageIndex(searchVO.getPageIndex());
 		vo.setSearchCondition(searchVO.getSearchCondition());
 		vo.setSearchKeyword(searchVO.getSearchKeyword());

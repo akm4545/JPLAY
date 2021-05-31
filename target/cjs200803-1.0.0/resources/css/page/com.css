@@ -1,0 +1,46 @@
+/*
+  Css Name :com.css
+  Description :공통 CSS
+  Modification Information
+
+      수정일                 수정자          수정내용
+   ----------    --------  ---------------------------
+   2016.06.08    서민영          최초 생성
+   2018.06.01    유현우          공통컴포넌트 3.8 개선
+
+    author   :공통컴포넌트 개발팀 서민영
+    since    :2016.06.08
+*/
+@charset "utf-8";
+
+#paging img, #paging label { vertical-align:middle; }
+#paging ul, #paging ol { list-style :none; } 
+#paging a { color:#666; text-decoration:none; }
+#paging a:hover { color:#000; text-decoration:none; }
+#paging a, #paging button, #paging input[type="button"] { cursor:pointer; }
+
+/* pagination */
+.pagination {text-align:center; margin-top:15px; }
+.pagination ul { display:inline-block; }
+.pagination ul li {display:inline-block; margin:0 2px;  }
+.pagination ul li a { display:block; color:#999; width:26px; height:26px; line-height:26px; border:1px solid #e0e0e0; }
+.pagination ul li.first a { background:url('../../../images/egovframework/com/cmm/paging/pagination_first.gif') 8px 9px no-repeat; text-indent:-10000em; }
+.pagination ul li.prev a { background:url('../../../images/egovframework/com/cmm/paging/pagination_prev.gif') 11px 9px no-repeat; text-indent:-10000em; }
+.pagination ul li.next a { background:url('../../../images/egovframework/com/cmm/paging/pagination_next.gif') 12px 9px no-repeat; text-indent:-10000em; }
+.pagination ul li.last a { background:url('../../../images/egovframework/com/cmm/paging/pagination_last.gif') 10px 9px no-repeat; text-indent:-10000em; }
+.pagination ul li.first a:hover { background:url('../../../images/egovframework/com/cmm/paging/pagination_first_on.gif') no-repeat; }
+.pagination ul li.prev a:hover { background:url('../../../images/egovframework/com/cmm/paging/pagination_prev_on.gif') no-repeat; }
+.pagination ul li.next a:hover { background:url('../../../images/egovframework/com/cmm/paging/pagination_next_on.gif/') no-repeat; }
+.pagination ul li.current a,
+.pagination ul li a:hover { border:none; color:#fff; font-size:15px; font-weight:600; width:28px; height:28px; line-height:28px; background:#4688d2; }
+
+/* pagination by reply */
+.paging { float:left; display:inline; width:730px; font-size:1em; text-align:center; margin:15px 0 20px; position:relative;  }
+.paging ul { display:inline-block; margin:0; padding:0; }
+.paging ul li { float:left; margin:0 3px; }
+.paging ul li a { display:block; width:15px; color:#888; text-decoration:none; }
+.paging ul li.first a { background:url('../../../images/egovframework/com/cmm/paging/pagination_first.gif') center 5px no-repeat; text-indent:-10000em; }
+.paging ul li.prev a { background:url('../../../images/egovframework/com/cmm/paging/pagination_prev.gif') center 5px no-repeat; text-indent:-10000em; }
+.paging ul li.next a { background:url('../../../images/egovframework/com/cmm/paging/pagination_next.gif') center 5px no-repeat; text-indent:-10000em; }
+.paging ul li.last a { background:url('../../../images/egovframework/com/cmm/paging/pagination_last.gif') center 5px no-repeat; text-indent:-10000em; }
+.paging strong { display:block; padding:0 5px; color:#2277d7; }

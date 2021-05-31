@@ -1,0 +1,186 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="jPlay.movie.dao.MovieMapper">
+	
+	<resultMap id="movie" type="jPlay.admin.movie.vo.AdminMovieVO">
+		<result property="movieIdx" column="movie_idx" />
+		<result property="movieTitle" column="movie_title" />
+		<result property="movieOpeningdate" column="movie_openingDate" />
+		<result property="movieSynopsis" column="movie_synopsis" />
+		<result property="movieRating" column="movie_rating" />
+		<result property="movieGenre" column="movie_genre" />
+		<result property="movieAge" column="movie_age" />
+		<result property="movieDirector" column="movie_director" />
+		<result property="movieActor" column="movie_actor" />
+		<result property="movieViewcount" column="movie_viewCount" />
+	</resultMap>
+	
+	<select id="selectMovie" resultMap="movie">
+			SELECT *
+			FROM movie INNER JOIN file
+				ON movie.movie_idx = file.movie_idx
+				AND file.file_type = "video"
+				AND file.file_classification = "trailer"
+				AND movie.movie_idx = #{movieIdx}; 
+	</select>
+	
+	<select id="selectMainVideo" resultMap="movie">
+		SELECT file.file_name
+		FROM movie INNER JOIN file
+			ON movie.movie_idx = file.movie_idx
+			AND file.file_type = "video"
+			AND file.file_classification = "main"
+			AND movie.movie_idx = #{movieIdx};
+	</select>
+	
+	<update id="updateRating">
+		UPDATE movie 
+			SET movie_rating = (SELECT TRUNCATE(AVG(rating_score),0)
+								FROM rating 
+								WHERE movie_idx = #{movieIdx})
+		WHERE movie.movie_idx = #{movieIdx};
+	</update>
+	
+	<update id="addMovieView">
+		UPDATE movie 
+			SET movie_viewCount = movie_viewCount + 1  
+		WHERE movie_idx = #{movieIdx};
+	</update>
+	
+	<insert id="insertRecentlyView">
+		INSERT INTO recentlyView
+		VALUES(#{memberIdx}, #{movieIdx}, default);
+	</insert>
+	
+	<select id="selectRecentlyView" resultType="boolean">
+		SELECT IF(COUNT(*) = 1, 0, 1) FROM recentlyView
+		WHERE member_idx = #{memberIdx}
+		AND movie_idx = #{movieIdx}
+	</select>
+	
+	<update id="updateRecentlyView">
+		UPDATE recentlyView
+			SET recentlyView_viewDate = now()
+		WHERE member_idx = #{memberIdx}
+		AND movie_idx = #{movieIdx}
+	</update>
+	
+	<select id="selectRecentlyList" resultType="egovMap">
+		SELECT
+				*
+			FROM recentlyView
+            	INNER JOIN movie
+            		ON recentlyView.movie_idx = movie.movie_idx
+            	INNER JOIN file
+            		ON movie.movie_idx = file.movie_idx
+            	WHERE recentlyView.member_idx = #{memberIdx}
+            		AND file.file_type = 'image'  
+            ORDER BY recentlyView.recentlyView_viewDate DESC
+	</select>
+	
+	<select id="selectWishList" resultType="egovMap">
+		<![CDATA[
+			SELECT
+				*
+			FROM wishlist
+            	INNER JOIN movie
+            		ON wishlist.movie_idx = movie.movie_idx
+            	INNER JOIN file
+            		ON movie.movie_idx = file.movie_idx
+            	WHERE wishlist.member_idx = #{memberIdx}
+            		AND file.file_type = 'image'  
+            ORDER BY wishlist.wishList_date DESC
+				limit 12 offset #{firstIndex}
+			]]>
+	</select>
+	
+	<select id="selectWishListTotCnt" parameterType="jPlay.wihsList.vo.WishlistVO" resultType="int">
+			SELECT COUNT(*) totcnt
+			FROM wishlist
+			WHERE member_idx = #{memberIdx}
+	</select>
+	
+	<select id="selectMovieList" parameterType="jPlay.admin.movie.vo.AdminMovieVO" resultType="egovMap">
+		SELECT
+			file.movie_idx
+			, file.file_name
+		FROM movie INNER JOIN file
+			ON movie.movie_idx = file.movie_idx
+			AND file.file_type = "image"
+		<if test='searchKeyword == null or searchKeyword == ""'>
+			<where>
+				1 = 2
+			</where>
+		</if>	
+		<if test='searchKeyword != null and searchKeyword != ""'>
+			<where>
+				movie.movie_title LIKE CONCAT('%',#{searchKeyword},'%')
+			</where>
+		</if>
+			ORDER BY movie_idx DESC
+			limit #{recordCountPerPage} offset #{firstIndex}	
+	</select>
+		
+	<select id="selectMovieListTotCnt" parameterType="jPlay.admin.movie.vo.AdminMovieVO" resultType="int">
+		SELECT COUNT(*) totcnt
+		FROM movie
+		<if test='searchKeyword == null or searchKeyword == ""'>
+			<where>
+				1 = 2
+			</where>
+		</if>
+		<if test='searchKeyword != null and searchKeyword != ""'>
+			<where>
+				movie_title LIKE CONCAT('%',#{searchKeyword},'%')
+			</where>
+		</if>			
+	</select>
+	
+	<select id="selectMovieGenreList" parameterType="jPlay.admin.movie.vo.AdminMovieVO" resultType="egovMap">
+		SELECT
+			file.movie_idx
+			, file.file_name
+		FROM movie INNER JOIN file
+			ON movie.movie_idx = file.movie_idx
+			AND file.file_type = "image"
+			<where>
+				movie.movie_genre LIKE CONCAT('%',#{searchKeyword},'%')
+			</where>
+			ORDER BY movie_idx DESC
+			limit 12 offset #{firstIndex}
+	</select>
+		
+	<select id="selectMovieGenreListTotCnt" parameterType="jPlay.admin.movie.vo.AdminMovieVO" resultType="int">
+		SELECT COUNT(*) totcnt
+		FROM movie
+		<where>
+			movie_genre LIKE CONCAT('%',#{searchKeyword},'%')
+		</where>
+	</select>
+	
+	<select id="selectRecommend" resultMap="movie">
+		SELECT
+			file.movie_idx
+			, file.file_name
+		FROM movie INNER JOIN file
+			ON movie.movie_idx = file.movie_idx
+			AND file.file_type = "image"
+			<where>
+				movie.movie_genre LIKE CONCAT('%',#{movieGenre},'%')
+			</where>
+			ORDER BY movie_viewCount DESC
+			limit 8 offset 0
+	</select>
+	
+	<delete id="deleteRecentlyView">
+		DELETE FROM recentlyView 
+		WHERE recentlyView_viewDate IN (SELECT * FROM(
+										  (SELECT recentlyView_viewDate
+										   FROM recentlyView
+										  	WHERE member_idx = #{memberIdx}
+										  	ORDER BY recentlyView_viewDate desc limit 10,321313) 
+											as tmp)
+							)
+	</delete>
+</mapper>

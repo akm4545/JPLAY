@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE configuration PUBLIC "-//mybatis.org//DTD Config 3.0//EN" "http://mybatis.org/dtd/mybatis-3-config.dtd">
+
+<configuration>
+	<!--Mybatis 설정 -->
+	<settings>
+		<!-- 전통적인 데이터베이스 컬럼명 형태인 A_COLUMN을 CamelCase형태의 자바 프로퍼티명 형태인 aColumn으로 자동으로 매핑하도록 함 -->
+		<setting name="mapUnderscoreToCamelCase" value="true"></setting>
+		<!--  파라미터에 Null 값이 있을 경우 에러 처리 -->
+		<setting name="jdbcTypeForNull" value="VARCHAR"></setting>
+	</settings>
+	
+	<!-- Type Aliases 설정-->
+	<typeAliases>
+		<typeAlias alias="egovMap" type="egovframework.rte.psl.dataaccess.util.EgovMap" />
+		<typeAlias alias="member" type="jPlay.member.vo.MemberVO"/>
+		<typeAlias alias="movie" type="jPlay.admin.movie.vo.AdminMovieVO"/>
+		<typeAlias alias="file" type="jPlay.admin.movie.vo.AdminMovieVO"/>
+		<typeAlias alias="payment" type="jPlay.payment.vo.PaymentVO"/>
+		<typeAlias alias="wishlist" type="jPlay.wihsList.vo.WishlistVO"/>
+		<typeAlias alias="qna" type="jPlay.userService.qna.vo.QnaVO"/>
+		<typeAlias alias="notify" type="jPlay.admin.userService.notify.vo.AdminNotifyVO"/>
+	</typeAliases>
+	
+</configuration>

@@ -140,7 +140,7 @@
 	</select>
 	
 	<select id="selectGroupDel" resultMap="groupDelMap">
-		SELECT COUNT(del.member_idx) AS totalNum, Date 
+		SELECT COUNT(del.member_idx) AS totalNum, Date
 		FROM (SELECT * FROM member
 				WHERE member_del = "Y") as del
 		RIGHT OUTER JOIN (SELECT

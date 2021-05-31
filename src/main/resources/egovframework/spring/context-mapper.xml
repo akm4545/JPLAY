@@ -13,5 +13,4 @@
  	<bean class="egovframework.rte.psl.dataaccess.mapper.MapperConfigurer">
 		<property name="basePackage" value="jPlay" />
 	</bean>
-    
 </beans>

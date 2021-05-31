@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="jPlay.userService.notify.dao.NotifyMapper">
+	
+	<resultMap id="notify" type="jPlay.admin.userService.notify.vo.AdminNotifyVO">
+		<result property="notifyIdx" column="notify_idx" />
+		<result property="notifyType" column="notify_type" />
+		<result property="notifyTitle" column="notify_title" />
+		<result property="notifyContent" column="notify_content" />
+		<result property="notifyDate" column="notify_date" />
+	</resultMap>
+	
+	<select id="selectNotifyList" parameterType="jPlay.admin.userService.notify.vo.AdminNotifyVO" resultType="egovMap">
+			SELECT
+								notify_idx
+								, notify_type
+								, notify_title
+								, notify_content
+								, notify_date
+					FROM notify
+				<if test='searchKeyword != null and searchKeyword != ""'>
+					<where>
+						notify_type LIKE CONCAT('%',#{searchKeyword},'%')
+					</where>
+				</if>
+				ORDER BY notify_date DESC
+				limit #{recordCountPerPage} offset #{firstIndex}	
+	</select>	
+	
+	<select id="selectNotifyListTotCnt" parameterType="jPlay.admin.userService.notify.vo.AdminNotifyVO" resultType="int">
+			SELECT COUNT(*) totcnt
+			FROM notify
+			<if test='searchKeyword != null and searchKeyword != ""'>
+				<where>
+					notify_type LIKE CONCAT('%',#{searchKeyword},'%')
+				</where>
+			</if>
+	</select>
+	
+	<select id="selectNotify" resultMap="notify">
+		SELECT
+								notify_idx
+								, notify_type
+								, notify_title
+								, notify_content
+								, notify_date
+					FROM notify
+		WHERE notify_idx = #{notifyIdx}	
+	</select>
+
+</mapper>

@@ -9,7 +9,7 @@ import egovframework.rte.psl.dataaccess.mapper.Mapper;
 
 @Mapper("adminMovieMapper")
 public interface AdminMovieMapper {
-
+	
     public int insertMovie(AdminMovieVO vo) throws Exception;
 
     public void updateMovie(AdminMovieVO vo) throws Exception;
